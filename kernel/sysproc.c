@@ -6,6 +6,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "vm.h"
+#include "sysinfo.h"
 
 uint64
 sys_exit(void)
@@ -109,4 +110,33 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+uint64
+sys_freepages(void)
+{
+  // TODO ②  call the function you wrote in kalloc.c
+  uint n; 
+  n = freepages();
+  return n;
+}
+
+uint64
+sys_sysinfo(void)
+{
+  struct sysinfo info;
+  uint64 addr;
+  struct proc *p = myproc();
+
+  argaddr(0, &addr);        // 첫 번째 인자를 주소로 받는다
+
+  info.freepages = freepages();
+  info.nproc     = nproc();
+
+  // TODO ②  copy info out to the user address
+  //        copyout(p->pagetable, p->sz, addr, ...) 를 씁니다
+  if (copyout(p->pagetable, p->sz, addr, (char *)&info, sizeof(info)) < 0)
+    return -1;
+
+  return 0;
 }
