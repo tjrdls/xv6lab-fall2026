@@ -93,6 +93,7 @@ freepages(void)
   r = kmem.freelist;
   while (r) {
     // TODO ①  count this page, then move to the next one
+    // 현재 페이지를 발견했으므로 카운트n을 증가시키고, 다음 빈 페이지로 이동
     r = r->next;
     n++;
   }

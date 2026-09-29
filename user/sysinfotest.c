@@ -15,7 +15,11 @@ main(void)
   printf("freepages = %lu pages\n", info.freepages);
   printf("nproc     = %lu\n", info.nproc);
 
+
+
+  //
   // TODO ③  fork a child, call sysinfo again, and see nproc change
+  // FORK로 프로세스를 하나 더 늘린 뒤 sysinfo를 다시 호출해 nproc값이 변경되었는지 확인
   int pid = fork();
   if (pid < 0) exit(1);
 

@@ -710,7 +710,8 @@ nproc(void)
   for (p = proc; p < &proc[NPROC]; p++) {
     acquire(&p->lock);
     // TODO ①  count this one if its state is not UNUSED
-    if (p->state == UNUSED) n++; 	
+    // 프로세스 배열을 돌며 상태가 UNUSED가 아닌 경우에만 카운트 n 증가
+    if (p->state != UNUSED) n++; 	
     release(&p->lock);
   }
   return n;

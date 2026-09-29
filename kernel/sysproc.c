@@ -116,6 +116,7 @@ uint64
 sys_freepages(void)
 {
   // TODO ②  call the function you wrote in kalloc.c
+  // freepages 함수를 그대로 호출하여 반환한다.
   uint n; 
   n = freepages();
   return n;
@@ -135,6 +136,7 @@ sys_sysinfo(void)
 
   // TODO ②  copy info out to the user address
   //        copyout(p->pagetable, p->sz, addr, ...) 를 씁니다
+  //        info구조체 데이터를 사용자의 가상 주소 공간으로 복사, 실패시-1
   if (copyout(p->pagetable, p->sz, addr, (char *)&info, sizeof(info)) < 0)
     return -1;
 
