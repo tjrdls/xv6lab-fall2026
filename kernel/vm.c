@@ -496,22 +496,30 @@ ismapped(pagetable_t pagetable, uint64 va)
 static void
 vmprint_level(pagetable_t pagetable, int level)
 {
+  // 테이블 한 장에는 PTE 가 512칸 들어 있다. 0번부터 511번까지 빠짐없이 순회한다.
   for (int i = 0; i < 512; i++) {
+
+    // pagetable 은 uint64 * 이므로 배열처럼 인덱싱하면 i 번째 칸의 값이 나온다.
+    // (walk 과 달리 칸의 주소가 아니라 칸에 들어 있는 값 자체를 읽는다)
     pte_t pte = pagetable[i];
 
+    // V 비트가 꺼져 있으면 아무것도 매핑되지 않은 빈 칸이다 — 출력하지 않고 건너뛴다.
+    // 512칸 중 대부분이 여기서 걸러진다. 그래서 출력은 몇 줄 되지 않는다.
     if ((pte & PTE_V) == 0)
-      continue;                         // empty slot
+      continue;
 
-    // TODO ①  indent: print " .." once for L2, twice for L1, three times for L0
-    for (int j = 3; j > level; j--) printk(" ..");
+    // ① 깊이 표시 : L2 는 " .." 한 번, L1 은 두 번, L0 는 세 번 출력한다.
+    //    level 이 2면 d 가 2 하나뿐이라 1회, level 이 0이면 0·1·2 로 3회 돈다.
+    for (int d = level; d <= 2; d++)
+      printk(" ..");
 
+    // ② 칸 번호 · PTE 의 값 · 그 PTE 가 가리키는 물리 주소를 한 줄로 출력한다.
     printk("%d: pte %p pa %p\n", i, (void *)pte, (void *)PTE2PA(pte));
 
-    // TODO ②  if this PTE points to a lower-level table, descend into it
-    if (level > 0 && (pte & (PTE_R | PTE_W | PTE_X)) == 0) {
-      uint64 child_pa = PTE2PA(pte);
-      vmprint_level((pagetable_t)child_pa, level - 1);
-    }
+    // ③ L2 와 L1 의 칸은 다음 단계 테이블을 가리킨다. level 을 하나 낮춰 내려간다.
+    //    L0(level 0) 은 마지막 단계라 더 내려가지 않는다.
+    if (level > 0)
+      vmprint_level((pagetable_t)PTE2PA(pte), level - 1);
   }
 }
 
@@ -519,5 +527,5 @@ void
 vmprint(pagetable_t pagetable)
 {
   printk("page table %p\n", (void *)pagetable);
-  vmprint_level(pagetable, 2);
+  vmprint_level(pagetable, 2);        // 루트는 L2 부터 시작
 }
