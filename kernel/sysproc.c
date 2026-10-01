@@ -126,7 +126,7 @@ sys_va2pa(void)
   //          printk("va %p : L2=%d L1=%d L0=%d off=0x%x\n", ...);
   //          - 칸 번호 셋 : PX(2, va) · PX(1, va) · PX(0, va)
   //          - 오프셋     : va 의 아래 12비트  (va & 0xFFF)
-  printk("va %p : L2=%ld L1=%ld L0=%ld off=0x%xln\n",(void *)va, PX(2, va), PX(1, va), PX(0, va), (uint)(va & 0xFFF));
+  printk("va %p : L2=%ld L1=%ld L0=%ld off=0x%x\n",(void *)va, PX(2, va), PX(1, va), PX(0, va), (uint)(va & 0xFFF));
   // 가상 주소의 인덱스 및 오프셋 출력
 
   pte = walk(p->pagetable, va, 0);    // alloc = 0 : 찾기만 하고 만들지 않는다
